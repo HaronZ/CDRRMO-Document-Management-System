@@ -8,4 +8,6 @@ use Filament\Resources\Pages\CreateRecord;
 class CreateFolder extends CreateRecord
 {
     protected static string $resource = FolderResource::class;
+
+    protected static bool $canCreateAnother = false;
 }

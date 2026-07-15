@@ -11,6 +11,8 @@ class CreateFile extends CreateRecord
 {
     protected static string $resource = FileResource::class;
 
+    protected static bool $canCreateAnother = false;
+
     protected ?string $uploadedPath = null;
 
     /**
