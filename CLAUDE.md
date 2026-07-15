@@ -27,10 +27,10 @@ $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";"
 ## Data model
 
 - `users` — `is_admin` boolean flag. Only two roles exist (admin, regular user) — do not add a full roles/permissions package for this.
-- `folders` — self-referencing `parent_id` (tree), `owner_id`, soft-deletes (Recycle Bin).
-- `files` — `folder_id`, `owner_id`, `assigned_to_user_id` (nullable — optionally tagged user), `current_version_id`, soft-deletes.
-- `file_versions` — append-only, one row per upload. Never hard-deleted — this is what makes "Replace" non-destructive.
-- `file_tasks` — `assigned_by`, `assigned_to`, `status` (pending/completed/overwritten/cancelled), `due_date`. The durable, queryable task record — Laravel's `notifications` table is only the transient alert layer on top of it.
+- `folders` — self-referencing `parent_id` (tree), `owner_id`, soft-deletes (Recycle Bin). Deleting a folder recursively soft-deletes its subfolders and files (see `MyFiles::softDeleteFolderRecursively`); restoring does the same in reverse.
+- `files` — `folder_id`, `owner_id`, `current_version_id`, soft-deletes. `assigned_to_user_id` (nullable — optionally tagged user) is added in Phase 5, not yet present.
+- `file_versions` — append-only, one row per upload. Never hard-deleted — this is what makes "Replace" non-destructive. Phase 2 only ever creates version 1 (no overwrite path yet); same-name uploads in the same folder auto-suffix (`name (1).ext`) until Phase 4 adds the Replace/Keep-both choice.
+- `file_tasks` — `assigned_by`, `assigned_to`, `status` (pending/completed/overwritten/cancelled), `due_date`. The durable, queryable task record — Laravel's `notifications` table is only the transient alert layer on top of it. Not built yet (Phase 5).
 - `activity_log` — from spatie/laravel-activitylog. `causer`/`subject`/`event`/`properties`. Standard event vocabulary: `uploaded`, `downloaded`, `renamed`, `deleted`, `restored`, `moved`, `overwritten`, `version_reverted`, `task_assigned`, `task_completed`.
 
 ## Key conventions
