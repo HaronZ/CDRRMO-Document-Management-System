@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
+use App\Livewire\ChangePassword;
 use App\Livewire\MyFiles;
 use Illuminate\Support\Facades\Route;
 
@@ -24,4 +25,5 @@ Route::middleware('guest')->group(function () {
 Route::middleware('auth')->group(function () {
     Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
     Route::get('/my-files', MyFiles::class)->name('my-files.index');
+    Route::get('/account/password', ChangePassword::class)->name('account.password');
 });
