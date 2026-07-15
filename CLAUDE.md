@@ -8,6 +8,7 @@ Digitizes paper records for a City Disaster Risk Reduction and Management Office
 - Filament v5 (admin panel) + Livewire v4 (hand-built "My Files" explorer for regular users) — installed as current stable; do not downgrade to v4/v3 without a reason, they're superseded
 - `spatie/laravel-activitylog` v4.x (audit trail) — pinned to v4 because v5 requires PHP 8.4, which this environment doesn't have yet. Bump both together later if PHP is upgraded.
 - No Redis/queue worker/websockets — `QUEUE_CONNECTION=database`, `CACHE_STORE=database`, `SESSION_DRIVER=database` (already the Laravel 13 defaults). Keep it this way; this is a low-traffic LGU office app and extra infra just adds ops burden for a solo maintainer.
+- Outbound email via Resend (`resend/resend-laravel`) — `MAIL_MAILER=resend`, `RESEND_API_KEY` in `.env` (never commit the real key; `.env.example` only has a placeholder). `MAIL_FROM_ADDRESS` is `onboarding@resend.dev` (Resend's sandbox sender — works immediately, no domain verification) until a real domain is verified in Resend's dashboard.
 
 ## Build & run
 
@@ -23,6 +24,8 @@ Windows dev note: PHP (winget `PHP.PHP.8.3`) and Composer (manual install to `%L
 ```powershell
 $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
 ```
+
+Windows dev note #2: this winget PHP build has no CA certificate bundle configured, so any outbound HTTPS call (Resend, any API) fails with a cURL SSL error ("unable to get local issuer certificate"). Fixed by downloading `cacert.pem` (from curl.se/ca/cacert.pem) into the PHP install directory and pointing `curl.cainfo` / `openssl.cafile` at it in `php.ini`. If this environment is ever reprovisioned, redo that step.
 
 ## Data model
 
