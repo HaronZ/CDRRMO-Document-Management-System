@@ -81,4 +81,14 @@ class UserResourceTest extends TestCase
 
         Notification::assertSentTo($user, WelcomeNotification::class);
     }
+
+    public function test_admin_cannot_resend_welcome_email_to_themselves(): void
+    {
+        $admin = User::factory()->create(['is_admin' => true]);
+
+        $this->actingAs($admin);
+
+        Livewire::test(ListUsers::class)
+            ->assertTableActionHidden('resendWelcomeEmail', $admin);
+    }
 }

@@ -49,6 +49,7 @@ class UsersTable
                 Action::make('resendWelcomeEmail')
                     ->label('Resend welcome email')
                     ->icon(Heroicon::OutlinedEnvelope)
+                    ->visible(fn (User $record): bool => $record->id !== auth()->id())
                     ->requiresConfirmation()
                     ->modalDescription('Send a fresh "set your password" link to this user? Any previous link will stop working.')
                     ->action(function (User $record) {
