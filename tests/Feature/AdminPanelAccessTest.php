@@ -34,4 +34,14 @@ class AdminPanelAccessTest extends TestCase
 
         $response->assertForbidden();
     }
+
+    public function test_signing_out_of_the_panel_redirects_to_the_shared_login_page(): void
+    {
+        $admin = User::factory()->create(['is_admin' => true]);
+
+        $response = $this->actingAs($admin)->post('/admin/logout');
+
+        $response->assertRedirect('/login');
+        $this->assertGuest();
+    }
 }
