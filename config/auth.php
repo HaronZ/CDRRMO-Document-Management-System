@@ -96,7 +96,10 @@ return [
         'users' => [
             'provider' => 'users',
             'table' => env('AUTH_PASSWORD_RESET_TOKEN_TABLE', 'password_reset_tokens'),
-            'expire' => 60,
+            // 3 days, not Laravel's default 60 minutes - this same broker backs the
+            // welcome "set your password" link for new accounts, which a new hire
+            // may not open right away, unlike a security-sensitive forgot-password reset.
+            'expire' => 4320,
             'throttle' => 60,
         ],
     ],

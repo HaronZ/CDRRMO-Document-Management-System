@@ -3,6 +3,7 @@
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Livewire\ChangePassword;
 use App\Livewire\MyFiles;
+use App\Livewire\SetPassword;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -20,6 +21,7 @@ Route::get('/', function () {
 Route::middleware('guest')->group(function () {
     Route::get('/login', [AuthenticatedSessionController::class, 'create'])->name('login');
     Route::post('/login', [AuthenticatedSessionController::class, 'store']);
+    Route::get('/set-password/{token}', SetPassword::class)->name('password.set');
 });
 
 Route::middleware('auth')->group(function () {

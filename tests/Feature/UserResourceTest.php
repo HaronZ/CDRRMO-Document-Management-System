@@ -35,7 +35,6 @@ class UserResourceTest extends TestCase
             ->fillForm([
                 'name' => 'Juan Dela Cruz',
                 'email' => 'juan@cdrrmo.test',
-                'password' => 'password123',
                 'is_admin' => false,
             ])
             ->call('create')
@@ -47,7 +46,7 @@ class UserResourceTest extends TestCase
         ]);
     }
 
-    public function test_creating_a_user_sends_them_a_welcome_email_with_their_password(): void
+    public function test_creating_a_user_sends_them_a_welcome_email_with_a_set_password_link(): void
     {
         Notification::fake();
 
@@ -58,7 +57,6 @@ class UserResourceTest extends TestCase
             ->fillForm([
                 'name' => 'Juan Dela Cruz',
                 'email' => 'juan@cdrrmo.test',
-                'password' => 'temporary-pass-1',
                 'is_admin' => false,
             ])
             ->call('create')
@@ -66,10 +64,21 @@ class UserResourceTest extends TestCase
 
         $newUser = User::where('email', 'juan@cdrrmo.test')->firstOrFail();
 
-        Notification::assertSentTo(
-            $newUser,
-            WelcomeNotification::class,
-            fn (WelcomeNotification $notification) => $notification->temporaryPassword === 'temporary-pass-1'
-        );
+        Notification::assertSentTo($newUser, WelcomeNotification::class);
+    }
+
+    public function test_admin_can_resend_the_welcome_email(): void
+    {
+        Notification::fake();
+
+        $admin = User::factory()->create(['is_admin' => true]);
+        $user = User::factory()->create();
+
+        $this->actingAs($admin);
+
+        Livewire::test(ListUsers::class)
+            ->callTableAction('resendWelcomeEmail', $user);
+
+        Notification::assertSentTo($user, WelcomeNotification::class);
     }
 }

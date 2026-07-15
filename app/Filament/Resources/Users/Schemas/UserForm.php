@@ -23,12 +23,10 @@ class UserForm
                     ->unique(ignoreRecord: true),
                 TextInput::make('password')
                     ->password()
-                    ->required(fn (string $operation): bool => $operation === 'create')
+                    ->visible(fn (string $operation): bool => $operation === 'edit')
                     ->dehydrated(fn (?string $state): bool => filled($state))
                     ->minLength(8)
-                    ->helperText(fn (string $operation): string => $operation === 'edit'
-                        ? 'Leave blank to keep the current password.'
-                        : 'The user can change this after logging in.'),
+                    ->helperText('Leave blank to keep the current password. New accounts set their own password via the welcome email instead.'),
                 Toggle::make('is_admin')
                     ->label('Administrator')
                     ->helperText('Admins have full control over every user, file, and folder.')
