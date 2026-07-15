@@ -35,6 +35,9 @@ $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";"
 
 ## Key conventions
 
+- Livewire v4 defaults `make:livewire` to single-file components (a `⚡name.blade.php` file mixing PHP + Blade). We deliberately use `php artisan make:livewire Name --class` instead — a separate PHP class (`app/Livewire/Name.php`) and Blade view (`resources/views/livewire/name.blade.php`). Easier to review/diff and more familiar than SFCs for a component this complex.
+- Full-page Livewire components (routed directly, e.g. `Route::get('/my-files', MyFiles::class)`) render inside `resources/views/layouts/app.blade.php` automatically (Livewire's default `component_layout` config, `layouts::app` → `resources/views/layouts/`). Don't add `<html>`/`<head>` inside a Livewire component's own view — only the inner content.
+- General auth (login/logout for all users) is separate from Filament's own `/admin/login` — that one is gated to admins only (`canAccessPanel()`). Regular staff log in at plain `/login` (`AuthenticatedSessionController`), then get redirected to `/my-files`; admins get redirected to `/admin`. `/` itself just dispatches guest → login, admin → `/admin`, regular user → `/my-files`.
 - Files are never served from `public/` — stream downloads through an authenticated controller/policy check, never a public disk URL.
 - Regular-user file/folder queries are always scoped to `owner_id` via a Policy — never trust a route-model-bound ID alone.
 - Admin Filament resources (Users, Files, Folders, Activity Log) are intentionally **unscoped** — that's the "admin has full control" requirement, not a bug.
